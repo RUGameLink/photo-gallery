@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Моя фотоколлекция</title>
+    <style>
+        /* Стили для вашего сайта */
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #slider {
+            position: relative;
+            max-width: 70%; /* Максимум контейнер изображений на 70% страницы */
+        }
+        #slider img {
+            max-height: 70vh; /* Изображение занимает 70% высоты страницы */
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Уменьшение масштаба изображений */
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            background-color: black; /* Заливка внутри черным */
+            color: white; /* Иконки "<" и ">" внутри кнопок белые */
+            border: 2px solid white; /* Обводка белая */
+            cursor: pointer;
+            padding: 15px; /* Немного побольше */
+            border-radius: 50%; /* Круглые */
+            font-size: 20px; /* Немного побольше */
+            width: 50px; /* Ширина кнопки */
+            height: 50px; /* Высота кнопки */
+        }
+        .prev {
+            left: 30px; /* Подальше от краев страницы */
+        }
+        .next {
+            right: 30px; /* Подальше от краев страницы */
+        }
+        #slide-number {
+            color: white; /* Панелька белого цвета */
+            position: absolute;
+            bottom: 30px; /* Подпини местого панельку выше */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px; /* Увеличь шрифт */
+        }
+    </style>
+</head>
+<body>
+    <h1 id="album-title">Моя фотоколлекция</h1>
+    <div id="slider">
+        <!-- Здесь будут отображаться ваши фотографии -->
+    </div>
+    <button class="nav-button prev" onclick="changeSlide(-1)"><</button>
+    <button class="nav-button next" onclick="changeSlide(1)">></button>
+    <div id="slide-number"></div>
+
+    <script>
+        let slideIndex = 0;
+        let slides = [];
+
+        // Загрузка данных из JSON-файла и создание слайдера
+        fetch('photos.json')
+            .then(response => response.json())
+            .then(data => {
+                const sliderDiv = document.getElementById('slider');
+                data.forEach(photo => {
+                    if (photo.name.endsWith('.jpg')) {
+                        const img = document.createElement('img');
+                        img.src = photo.name;
+                        img.style.display = 'none';
+                        sliderDiv.appendChild(img);
+                        slides.push(img);
+                    }
+                });
+                slides[0].style.display = 'block';
+                updateSlideNumber();
+                updateAlbumTitle();
+            });
+
+        function changeSlide(n) {
+            slideIndex += n;
+            if (slideIndex < 0) slideIndex = slides.length - 1;
+            if (slideIndex >= slides.length) slideIndex = 0;
+            slides.forEach((slide, index) => {
+                slide.style.display = index === slideIndex ? 'block' : 'none';
+            });
+            updateSlideNumber();
+        }
+
+        function updateSlideNumber() {
+            document.getElementById('slide-number').textContent = `${slideIndex + 1}/${slides.length}`;
+        }
+
+        function updateAlbumTitle() {
+            const albumTitle = window.location.pathname.split('/').slice(-2, -1)[0];
+            document.getElementById('album-title').textContent = albumTitle;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Моя фотоколлекция</title>
+    <style>
+        /* Стили для вашего сайта */
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 300px); /* Максимум 5 ячеек в одной строке */
+            justify-content: center;
+            gap: 20px;
+        }
+        .grid-item {
+            width: 300px;
+            height: 450px;
+            background-size: cover;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 0 10px blue;
+        }
+        .grid-item:hover {
+            box-shadow: 0 0 30px blue; /* Ярче выделение активной ячейки */
+        }
+        .grid-item p {
+            position: absolute;
+            bottom: 0; /* Плашка с подписью внизу ячейки */
+            width: 100%;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Моя фотоколлекция</h1>
+    <div id="albums" class="grid-container">
+        <!-- Здесь будут отображаться ваши альбомы -->
+    </div>
+
+    <script>
+        // Загрузка данных из JSON-файла и создание элементов альбома
+        fetch('albums.json')
+            .then(response => response.json())
+            .then(data => {
+                const albumsDiv = document.getElementById('albums');
+                data.forEach(album => {
+                    album.folder = album.folder.replace(/\\\\/g, '/');
+                    const albumDiv = document.createElement('div');
+                    albumDiv.className = 'grid-item';
+                    albumDiv.style.backgroundImage = `url('${album.folder}/${album.cover}')`;
+                    albumDiv.onclick = function() {
+                        window.location.href = `${album.folder}/slider.html`;
+                    };
+                    const albumName = document.createElement('p');
+                    albumName.textContent = album.name;
+                    albumDiv.appendChild(albumName);
+                    albumsDiv.appendChild(albumDiv);
+                });
+            });
+    </script>
+</body>
+</html>
